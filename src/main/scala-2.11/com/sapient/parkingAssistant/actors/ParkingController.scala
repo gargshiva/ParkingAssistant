@@ -54,7 +54,8 @@ class ParkingController(zookeeper: String, groupId: String, val topic: String) {
     // val vehicle = (new Gson).fromJson(jsonVehicle,Vehicle)
     val vehicle = new Vehicle("AAA")
     println("Created Vehicle")
-    val futureSlotStatus = slotActor ? RequestSlot(vehicle)
+    val futureSlotStatus =  slotActor ? RequestSlot(vehicle)
+    //val futureSlotStatus = slotActor ? RequestSlot(vehicle)
     val futureSecurityStatus = securityActor ? SecurityCheck(vehicle)
 
     val parkingStatusFuture = for {

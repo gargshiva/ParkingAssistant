@@ -2,7 +2,7 @@ package com.sapient.parkingAssistant.actors
 
 import akka.actor.{Actor, ActorLogging}
 import com.sapient.parkingAssistant.actors.SlotMonitor.RequestSlot
-import com.sapient.parkingAssistant.domain.{ParkingSlot, Vehicle}
+import com.sapient.parkingAssistant.domain.{ParkingSlot, Vehicle, VehicleStatus}
 
 import scala.util.control.Breaks
 
@@ -32,6 +32,7 @@ class FloorMonitor(floorNumber: String) extends Actor with ActorLogging {
       if (!currentSlotStatus.get) {
         slotMap.put(parkingSlot.slotNumber, true)
         println(s"$vehicle parked at  [ ${parkingSlot.floorNumber} , ${parkingSlot.slotNumber} ] ")
+        sender ! VehicleStatus(vehicle, true, s"$vehicle parked at  [ ${parkingSlot.floorNumber} , ${parkingSlot.slotNumber} ] ")
       } else {
         println("Initiating a new request")
         ParkingController.slotActor ! RequestSlot(vehicle)

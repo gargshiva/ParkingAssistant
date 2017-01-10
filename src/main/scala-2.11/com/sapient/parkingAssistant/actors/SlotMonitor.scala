@@ -4,7 +4,7 @@ import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.pattern.ask
 import akka.util.Timeout
 import com.sapient.parkingAssistant.actors.SlotMonitor.RequestSlot
-import com.sapient.parkingAssistant.domain.{ParkingSlot, Vehicle}
+import com.sapient.parkingAssistant.domain.{ParkingSlot, Vehicle, VehicleStatus}
 
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{Await, Future}
@@ -40,10 +40,13 @@ class SlotMonitor(router: ActorRef) extends Actor with ActorLogging {
       val parkingS = res.asInstanceOf[ParkingSlot]
       val floorNumber = parkingS.floorNumber
       if (floorNumber.equals("floor2")) {
-        floor2 ! ParkTheCar(vehicle, parkingS)
-
+        val futureRes = floor2 ? ParkTheCar(vehicle, parkingS)
+        val r = Await.result(futureRes, timeout.duration)
+        sender ! r.asInstanceOf[VehicleStatus]
       } else {
-        floor1 ! ParkTheCar(vehicle, parkingS)
+        val futureRes = floor1 ? ParkTheCar(vehicle, parkingS)
+        val r = Await.result(futureRes, timeout.duration)
+        sender ! r.asInstanceOf[VehicleStatus]
       }
 
     }
@@ -51,4 +54,5 @@ class SlotMonitor(router: ActorRef) extends Actor with ActorLogging {
     case randomInput => println(s"Unknown Inputs $randomInput")
   }
 }
+
 
